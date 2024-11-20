@@ -64,9 +64,9 @@ func ShowTrainingInfo(action int, trainingType string, duration, weight, height 
 		calories := WalkingSpentCalories(action, duration, weight, height) // вызовите здесь необходимую функцию
 		return fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n", trainingType, duration, distance, speed, calories)
 	case trainingType == "Плавание":
-		distance := distanceSwim(action, lengthPool, countPool)                           // вызовите здесь необходимую функцию
-		speed := meanSpeedSwim(action, duration, float64(lengthPool), float64(countPool)) // вызовите здесь необходимую функцию
-		calories := SwimmingSpentCalories(int(lengthPool), countPool, duration, weight)   // вызовите здесь необходимую функцию
+		distance := distance(action)                                               // вызовите здесь необходимую функцию
+		speed := swimmingMeanSpeed(lengthPool, countPool, duration)                // вызовите здесь необходимую функцию
+		calories := SwimmingSpentCalories(lengthPool, countPool, duration, weight) // вызовите здесь необходимую функцию
 		return fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n", trainingType, duration, distance, speed, calories)
 	default:
 		return "неизвестный тип тренировки"
@@ -126,31 +126,5 @@ func swimmingMeanSpeed(lengthPool, countPool int, duration float64) float64 {
 // weight float64 — вес пользователя.
 func SwimmingSpentCalories(lengthPool, countPool int, duration, weight float64) float64 {
 	// ваш код здесь
-	// Переводим часы в минуты
-	durationInMinutes := duration * minInH
-
-	// Средняя скорость плавания
-	speed := swimmingMeanSpeed(lengthPool, countPool, duration)
-
-	// Потраченных калорий
-	calories := (speed + swimmingCaloriesMeanSpeedShift) *
-		swimmingCaloriesWeightMultiplier *
-		weight *
-		durationInMinutes
-
-	return calories
-}
-
-// Функция для расчета дистанции плавания
-func distanceSwim(action int, lengthPool, countPool int) float64 {
-	return float64(action) * float64(lengthPool) * float64(countPool) / mInKm
-}
-
-// Функция для расчета средней скорости плавания
-func meanSpeedSwim(action int, duration, lengthPool, countPool float64) float64 {
-	if duration == 0 {
-		return 0
-	}
-	distance := distanceSwim(action, int(lengthPool), int(countPool))
-	return distance / duration
+	return (swimmingMeanSpeed(lengthPool, countPool, duration) + swimmingCaloriesMeanSpeedShift) * swimmingCaloriesWeightMultiplier * weight * duration
 }
